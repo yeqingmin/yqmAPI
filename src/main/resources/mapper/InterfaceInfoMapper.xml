@@ -11,6 +11,7 @@
             <result property="url" column="url" jdbcType="VARCHAR"/>
             <result property="requestHeader" column="requestHeader" jdbcType="VARCHAR"/>
             <result property="responseHeader" column="responseHeader" jdbcType="VARCHAR"/>
+            <result property="requestParams" column="requestParams" jdbcType="VARCHAR"/>
             <result property="status" column="status" jdbcType="INTEGER"/>
             <result property="method" column="method" jdbcType="VARCHAR"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
@@ -23,6 +24,6 @@
         id,name,description,
         url,requestHeader,responseHeader,
         status,method,userId,
-        createTime,updateTime,isDelete
+        createTime,updateTime,isDelete,requestParams
     </sql>
 </mapper>

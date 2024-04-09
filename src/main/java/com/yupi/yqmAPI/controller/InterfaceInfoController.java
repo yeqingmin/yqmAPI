@@ -4,11 +4,13 @@ import com.alibaba.excel.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.apiclientsdk.Client.APIClient;
+import com.google.gson.Gson;
 import com.yupi.yqmAPI.annotation.AuthCheck;
 import com.yupi.yqmAPI.common.*;
 import com.yupi.yqmAPI.constant.CommonConstant;
 import com.yupi.yqmAPI.exception.BusinessException;
 import com.yupi.yqmAPI.model.dto.interfaceInfo.InterfaceInfoAddRequest;
+import com.yupi.yqmAPI.model.dto.interfaceInfo.InterfaceInfoInvokeRequest;
 import com.yupi.yqmAPI.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
 import com.yupi.yqmAPI.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
 import com.yupi.yqmAPI.model.entity.InterfaceInfo;
@@ -213,7 +215,7 @@ public class InterfaceInfoController {
         //2. 判断接口是否可以被调用，就是API签名认证，调用sdk
         com.example.apiclientsdk.Model.User user= new com.example.apiclientsdk.Model.User();
         user.setName("yeqingmin");
-        APIClient client=new APIClient("yeqingmin","abcdefg");
+        APIClient client=new APIClient();    //在yml配置文件里面已经写死了ak和sk了（这是管理员进行sdk测试调用的数据）
         String username=client.getUsernameByPost(user);
         if(username==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"无法访问");
@@ -255,6 +257,40 @@ public class InterfaceInfoController {
         //调用Service层去进行更新
         interfaceInfoService.updateById(interfaceInfo);
         boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 调用模拟接口
+     * @param interfaceInfoInvokeRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/invoke")
+    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest, HttpServletRequest request) {
+        //基础检查，是否为控制
+        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //1. 检查接口是否为空,是否关闭
+        InterfaceInfo oldInterfaceInfo= interfaceInfoService.getById(interfaceInfoInvokeRequest.getId());
+        if(oldInterfaceInfo==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口为空无法访问");
+        }
+        if (oldInterfaceInfo.getStatus() == InterfaceInfoStatusEnum.OFFLINE.getValue()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口已关闭");
+        }
+        //2. 将前端请求参数转换成User对象
+        String requestParams=interfaceInfoInvokeRequest.getUserRequestParams();
+        Gson gson =new Gson();
+        com.example.apiclientsdk.Model.User user = gson.fromJson(requestParams, com.example.apiclientsdk.Model.User.class);
+        //3. 新建client对象，获取当前用户的ak和sk
+        User currentUser= userService.getLoginUser(request);
+        String accessKey=currentUser.getAccessKey();
+        String secretKey=currentUser.getSecretKey();
+        APIClient client=new APIClient(accessKey,secretKey);
+        //4. 调用模拟接口发出请求获得结果
+        String result= client.getUsernameByPost(user);
         return ResultUtils.success(result);
     }
 }

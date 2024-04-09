@@ -102,3 +102,7 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.yupi.yqmAPI.controller
+yqm-api:
+  properties:
+    access-key: yeqingmin
+    secrete-key: abcdefg

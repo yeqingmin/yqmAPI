@@ -129,6 +129,12 @@
             <artifactId>apiClient-sdk</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version> <!-- 请使用你项目中合适的版本号 -->
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

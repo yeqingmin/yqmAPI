@@ -29,12 +29,12 @@ public class InterfaceInfoEditRequest implements Serializable {
     /**
      * 请求头
      */
-    private String requestheader;
+    private String requestHeader;
 
     /**
      * 响应头
      */
-    private String responseheader;
+    private String responseHeader;
 
     /**
      * 接口状态（0-关闭，1-开启）

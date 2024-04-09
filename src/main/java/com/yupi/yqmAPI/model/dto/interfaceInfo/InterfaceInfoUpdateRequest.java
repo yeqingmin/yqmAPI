@@ -33,12 +33,12 @@ public class InterfaceInfoUpdateRequest implements Serializable {
     /**
      * 请求头
      */
-    private String requestheader;
+    private String requestHeader;
 
     /**
      * 响应头
      */
-    private String responseheader;
+    private String responseHeader;
 
     /**
      * 接口状态（0-关闭，1-开启）
@@ -49,6 +49,12 @@ public class InterfaceInfoUpdateRequest implements Serializable {
      * 请求类型
      */
     private String type;
+
+    /**
+     * 请求参数
+     */
+    private String requestParams;
+
 
 
     private static final long serialVersionUID = 1L;
